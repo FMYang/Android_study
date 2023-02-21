@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     protected void loadData() {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("https://v2.alapi.cn/api/new/toutiao?start=1&token=LwExDtUWhF3rH5ib")
+                .url("https://collect.xmwxxc.com/collect/djt/?type=4")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
