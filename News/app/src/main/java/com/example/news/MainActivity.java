@@ -15,19 +15,37 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadData();
+//        loadData();
+        parse();
+    }
+
+    void parse() {
+        Moshi moshi = new Moshi.Builder().build();
+        JsonAdapter<Joke> jokeAdapter = moshi.adapter(Joke.class);
+        String json = "{\"name\":\"John\",\"age\":30}";
+        try {
+            Joke joke = jokeAdapter.fromJson(json);
+            Log.d("fmlog", joke.name + " " + joke.age);
+        } catch (IOException e) {
+            // 处理异常
+            e.printStackTrace();
+            // 或者显示错误消息，重新加载数据等
+        }
     }
 
     protected void loadData() {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("https://collect.xmwxxc.com/collect/djt/?type=4")
+                .url("https://collect.xmwxxc.com/collect/joke/")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -38,9 +56,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                final String res = response.body().string();
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Log.d("fmlog", "请求成功");
+                        Log.d("fmlog", res);
                         Toast.makeText(MainActivity.this, "success", Toast.LENGTH_SHORT).show();
                     }
                 });
