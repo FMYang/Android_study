@@ -3,9 +3,13 @@ package com.example.news;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,30 +29,37 @@ import com.squareup.moshi.Moshi;
 public class MainActivity extends AppCompatActivity {
 
     TextView textView;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = findViewById(R.id.text);
-        requestData();
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        requestData();
-        return super.onTouchEvent(event);
+        Button nextButton = findViewById(R.id.nextButton);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestData();
+            }
+        });
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
     }
 
     protected void requestData() {
+        progressDialog.show();
         loadData(joke -> {
+            progressDialog.dismiss();
             Log.d("fmlog", "success");
-            if(joke.data != null && joke.data.message != null) {
+            if(joke!= null && joke.data != null && joke.data.message != null) {
+                Log.d("fmlog", joke.data.message);
                 textView.setText(joke.data.message);
             } else {
                 textView.setText("null");
             }
         }, error-> {
+            progressDialog.dismiss();
             textView.setText("failed");
             Log.d("fmlog", "failed");
         });
@@ -68,10 +79,12 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
+    // 笑话： https://collect.xmwxxc.com/collect/joke/
+    // 心灵鸡汤  https://collect.xmwxxc.com/collect/djt/?type=0
     protected void loadData(Consumer<Joke> onSuccess, Consumer<String> onFailure) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("https://collect.xmwxxc.com/collect/joke/")
+                .url("https://collect.xmwxxc.com/collect/djt/?type=4")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
