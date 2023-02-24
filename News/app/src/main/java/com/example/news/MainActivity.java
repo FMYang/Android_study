@@ -4,12 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     TextView textView;
     ProgressDialog progressDialog;
+    ProgressBar progressBar;
+    View overlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +49,18 @@ public class MainActivity extends AppCompatActivity {
         });
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading...");
+        progressBar = findViewById(R.id.loading);
+        overlay = findViewById(R.id.overlay);
     }
 
     protected void requestData() {
-        progressDialog.show();
+//        progressDialog.show();
+        progressBar.setVisibility(View.VISIBLE);
+        overlay.setVisibility(View.VISIBLE);
         loadData(joke -> {
-            progressDialog.dismiss();
+//            progressDialog.dismiss();
+            progressBar.setVisibility(View.GONE);
+            overlay.setVisibility(View.GONE);
             Log.d("fmlog", "success");
             if(joke!= null && joke.data != null && joke.data.message != null) {
                 Log.d("fmlog", joke.data.message);
@@ -59,7 +69,9 @@ public class MainActivity extends AppCompatActivity {
                 textView.setText("null");
             }
         }, error-> {
-            progressDialog.dismiss();
+//            progressDialog.dismiss();
+            progressBar.setVisibility(View.GONE);
+            overlay.setVisibility(View.GONE);
             textView.setText("failed");
             Log.d("fmlog", "failed");
         });
